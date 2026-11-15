@@ -21,7 +21,7 @@ https://github.com/raaraudalesg-cell/ordenes-docker
 
 ## 2. Descripción
 
-RAUL es un sistema web para administrar órdenes de venta y sus respectivos productos, desarrollado mediante una arquitectura distribuida de tres contenedores Docker.
+Cree un sistema web para administrar órdenes de venta y sus respectivos productos, desarrollado mediante una arquitectura distribuida de tres contenedores Docker.
 
 El sistema permite crear, consultar, actualizar y eliminar órdenes y detalles de productos mediante una interfaz web desarrollada en Django.
 
