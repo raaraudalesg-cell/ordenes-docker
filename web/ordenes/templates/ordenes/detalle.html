@@ -1,0 +1,151 @@
+
+{% extends "ordenes/base.html" %}
+
+{% block contenido %}
+
+<section class="panel">
+    <p class="intro">INFORMACIÓN DE LA ORDEN</p>
+
+    <h2 class="titulo">ORDEN #{{ orden.id }}</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:25px;">
+
+        <div style="border:1px solid #383842;padding:18px;">
+            <p class="intro">CLIENTE</p>
+            <h2>{{ orden.cliente }}</h2>
+        </div>
+
+        <div style="border:1px solid #383842;padding:18px;">
+            <p class="intro">ESTADO</p>
+
+            {% if orden.estado == "Pagada" %}
+                <h2 style="color:#55ff99;">[ PAGADA ]</h2>
+            {% elif orden.estado == "Pendiente" %}
+                <h2 style="color:#ffc46b;">[ PENDIENTE ]</h2>
+            {% else %}
+                <h2 style="color:#ff476e;">[ ANULADA ]</h2>
+            {% endif %}
+        </div>
+
+        <div style="border:1px solid #383842;padding:18px;">
+            <p class="intro">FECHA</p>
+            <h2>{{ orden.fecha|slice:":10" }}</h2>
+        </div>
+
+    </div>
+
+    <div class="actions" style="margin-top:25px;">
+        <a href="{% url 'lista_ordenes' %}" class="btn btn-secondary">
+            VOLVER
+        </a>
+
+        <a href="{% url 'editar_orden' orden.id %}" class="btn btn-warning">
+            EDITAR ORDEN
+        </a>
+
+        <a href="{% url 'agregar_detalle' orden.id %}" class="btn btn-success">
+            + AGREGAR PRODUCTO
+        </a>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>PRODUCTOS DE LA ORDEN</h2>
+
+    <p class="intro">
+        Productos registrados en SQL Server mediante Flask REST API
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>PRODUCTO</th>
+                <th>CANTIDAD</th>
+                <th>PRECIO UNITARIO</th>
+                <th>SUBTOTAL</th>
+                <th>ACCIONES</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for detalle in orden.detalles %}
+            <tr>
+                <td>#{{ detalle.id }}</td>
+
+                <td>{{ detalle.producto }}</td>
+
+                <td>{{ detalle.cantidad }}</td>
+
+                <td>L {{ detalle.precio_unitario|floatformat:2 }}</td>
+
+                <td style="color:#55ff99;">
+                    L {{ detalle.subtotal|floatformat:2 }}
+                </td>
+
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'editar_detalle' detalle.id %}"
+                           class="btn btn-warning">
+                            EDITAR
+                        </a>
+
+                        <form method="post"
+                              action="{% url 'eliminar_detalle' detalle.id %}"
+                              onsubmit="return confirm('¿Deseas eliminar este producto?');">
+
+                            {% csrf_token %}
+
+                            <input type="hidden"
+                                   name="orden_id"
+                                   value="{{ orden.id }}">
+
+                            <button type="submit" class="btn btn-danger">
+                                ELIMINAR
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="6" style="text-align:center;padding:30px;">
+                    Esta orden todavía no tiene productos registrados.
+                </td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="panel">
+    <p class="intro">RESUMEN DE VENTA</p>
+
+    <h2>TOTAL DE LA ORDEN</h2>
+
+    <div class="total">
+        L {{ orden.total|floatformat:2 }}
+    </div>
+
+    <p>
+        El total se calcula automáticamente cuando agregas,
+        modificas o eliminas productos.
+    </p>
+
+    <div class="actions" style="margin-top:25px;">
+        <a href="{% url 'agregar_detalle' orden.id %}"
+           class="btn btn-success">
+            + AGREGAR PRODUCTO
+        </a>
+
+        <a href="{% url 'lista_ordenes' %}"
+           class="btn btn-secondary">
+            REGRESAR A ÓRDENES
+        </a>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,102 @@
+
+{% extends "ordenes/base.html" %}
+
+{% block contenido %}
+
+<section class="panel">
+    <p class="intro">SISTEMA DE ADMINISTRACIÓN ASHUR</p>
+
+    {% if orden %}
+        <h2 class="titulo">EDITAR ORDEN #{{ orden.id }}</h2>
+        <p>Modifica la información de la orden seleccionada.</p>
+    {% else %}
+        <h2 class="titulo">NUEVA ORDEN</h2>
+        <p>Registra una nueva orden de venta en el sistema.</p>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <h2>INFORMACIÓN DEL CLIENTE</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="cliente">NOMBRE DEL CLIENTE</label>
+        <input
+            type="text"
+            id="cliente"
+            name="cliente"
+            value="{{ orden.cliente|default:'' }}"
+            placeholder="Ingrese el nombre completo"
+            maxlength="150"
+            required
+        >
+
+        <label for="estado">ESTADO DE LA ORDEN</label>
+        <select id="estado" name="estado" required>
+            <option value="Pendiente"
+                {% if not orden or orden.estado == "Pendiente" %}selected{% endif %}>
+                Pendiente
+            </option>
+
+            <option value="Pagada"
+                {% if orden.estado == "Pagada" %}selected{% endif %}>
+                Pagada
+            </option>
+
+            <option value="Anulada"
+                {% if orden.estado == "Anulada" %}selected{% endif %}>
+                Anulada
+            </option>
+        </select>
+
+        {% if orden %}
+            <div style="border:1px solid #383842;padding:18px;margin-bottom:25px;">
+                <p class="intro">TOTAL ACTUAL</p>
+                <div class="total">
+                    L {{ orden.total|floatformat:2 }}
+                </div>
+                <p>El total se administra automáticamente desde la API.</p>
+            </div>
+        {% endif %}
+
+        <div class="actions">
+            <button type="submit" class="btn btn-success">
+                {% if orden %}
+                    GUARDAR CAMBIOS
+                {% else %}
+                    CREAR ORDEN
+                {% endif %}
+            </button>
+
+            <a href="{% url 'lista_ordenes' %}" class="btn btn-secondary">
+                CANCELAR
+            </a>
+        </div>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>INFORMACIÓN DEL SISTEMA</h2>
+
+    <div class="estado">
+        <span>Interfaz</span>
+        <span>Django</span>
+    </div>
+
+    <div class="estado">
+        <span>Procesamiento</span>
+        <span>Flask REST API</span>
+    </div>
+
+    <div class="estado">
+        <span>Almacenamiento</span>
+        <span>SQL Server 2022</span>
+    </div>
+
+    <p class="intro">
+        Los datos se envían a la API REST para su almacenamiento.
+    </p>
+</section>
+
+{% endblock %}

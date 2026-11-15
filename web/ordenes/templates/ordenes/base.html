@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RAUL | Órdenes de Venta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fondo: #050509;
+            --panel: #090b12;
+            --borde: #c7bdc7;
+            --texto: #e7dce4;
+            --rojo: #ff476e;
+            --verde: #55ff99;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--texto);
+            background-color: var(--fondo);
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                #ffffff05 4px
+            );
+            font-family: "VT323", monospace;
+            font-size: 23px;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 35px 10px 25px;
+        }
+
+        .logo h1 {
+            margin: 0;
+            font-family: "Press Start 2P", monospace;
+            font-size: clamp(26px, 5vw, 55px);
+            letter-spacing: 3px;
+            line-height: 1.5;
+            text-shadow: none;
+        }
+
+        .neon-fijo {
+            color: #ffb1c4;
+            text-shadow:
+                0 0 5px #ff285c,
+                0 0 12px #ff285c,
+                0 0 25px #ff0055,
+                0 0 45px #ff0055;
+        }
+
+        .neon-falla {
+            display: inline-block;
+            color: #ffb1c4;
+            text-shadow:
+                0 0 5px #ff285c,
+                0 0 12px #ff285c,
+                0 0 25px #ff0055,
+                0 0 45px #ff0055;
+            animation: neon-defectuoso 4s steps(1, end) infinite;
+            will-change: opacity, color, text-shadow;
+        }
+
+        @keyframes neon-defectuoso {
+            0%, 6%, 10%, 14%, 19%, 27%, 31%, 47%, 52%, 58%, 73%, 79%, 85%, 100% {
+                opacity: 1;
+                color: #ffb1c4;
+                text-shadow:
+                    0 0 5px #ff285c,
+                    0 0 12px #ff285c,
+                    0 0 25px #ff0055,
+                    0 0 45px #ff0055;
+            }
+
+            7%, 11%, 20%, 28%, 48%, 59%, 74%, 86% {
+                opacity: 0;
+                color: #21050e;
+                text-shadow: none;
+            }
+
+            12%, 29%, 49%, 75% {
+                opacity: 0.25;
+                color: #8b2946;
+                text-shadow: none;
+            }
+
+            32%, 42% {
+                opacity: 0.08;
+                color: #320713;
+                text-shadow: none;
+            }
+
+            53%, 57%, 80%, 84% {
+                opacity: 0.55;
+                color: #ff789a;
+                text-shadow: 0 0 4px #ff285c;
+            }
+        }
+
+        .logo p {
+            color: var(--rojo);
+            letter-spacing: 3px;
+            font-size: 19px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr) 250px;
+            gap: 16px;
+            max-width: 1650px;
+            margin: auto;
+            padding: 15px 24px;
+        }
+
+        .panel {
+            position: relative;
+            border: 1px solid var(--borde);
+            background: var(--panel);
+            padding: 22px 17px;
+            margin-bottom: 24px;
+            box-shadow: 0 0 10px #ffffff08;
+        }
+
+        .panel::before {
+            content: "༺ ✧ ༻";
+            position: absolute;
+            top: -17px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--fondo);
+            color: white;
+            padding: 0 12px;
+            white-space: nowrap;
+        }
+
+        .panel h2 {
+            margin: 0 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #383842;
+            font-size: 23px;
+            letter-spacing: 2px;
+        }
+
+        .menu a {
+            display: block;
+            color: var(--texto);
+            text-decoration: none;
+            padding: 9px 0;
+        }
+
+        .menu a:hover {
+            color: var(--rojo);
+            text-shadow: 0 0 10px var(--rojo);
+        }
+
+        .intro {
+            color: var(--rojo);
+        }
+
+        .titulo {
+            color: #ffb1c4;
+            font-family: "Press Start 2P", monospace;
+            font-size: clamp(15px, 2vw, 25px);
+            line-height: 1.8;
+            text-shadow: 0 0 15px #ff285c;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 9px 15px;
+            margin: 3px;
+            border: 1px solid var(--rojo);
+            background: transparent;
+            color: var(--rojo);
+            font-family: "VT323", monospace;
+            font-size: 21px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--rojo);
+            color: #050509;
+            box-shadow: 0 0 15px var(--rojo);
+        }
+
+        .btn-success {
+            border-color: var(--verde);
+            color: var(--verde);
+        }
+
+        .btn-success:hover {
+            background: var(--verde);
+            box-shadow: 0 0 15px var(--verde);
+        }
+
+        .btn-danger {
+            border-color: #ff476e;
+            color: #ff476e;
+        }
+
+        .btn-secondary {
+            border-color: #aaa;
+            color: #ddd;
+        }
+
+        .btn-warning {
+            border-color: #ffc46b;
+            color: #ffc46b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 13px 9px;
+            border-bottom: 1px solid #34343c;
+            text-align: left;
+        }
+
+        th {
+            color: var(--rojo);
+            font-weight: normal;
+        }
+
+        tr:hover {
+            background: #ff476e0a;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 18px;
+            background: #10121a;
+            border: 1px solid #55515d;
+            color: white;
+            font-family: "VT323", monospace;
+            font-size: 23px;
+        }
+
+        input:focus, select:focus {
+            outline: 1px solid var(--rojo);
+        }
+
+        label {
+            color: #ffb1c4;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #777;
+        }
+
+        .message.error {
+            border-color: var(--rojo);
+            color: var(--rojo);
+        }
+
+        .message.success {
+            border-color: var(--verde);
+            color: var(--verde);
+        }
+
+        .total {
+            color: var(--verde);
+            font-size: 32px;
+        }
+
+        .estado {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            border-bottom: 1px dashed #383842;
+        }
+
+        .ok {
+            color: var(--verde);
+        }
+
+        .hora {
+            font-family: "Press Start 2P", monospace;
+            font-size: 17px;
+            color: #ffc6d3;
+            line-height: 2;
+        }
+
+        .contenido {
+            min-width: 0;
+        }
+
+        .contenido .panel {
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        @media (max-width: 1100px) {
+            .layout {
+                grid-template-columns: 180px minmax(0, 1fr);
+            }
+
+            .derecha {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                display: block;
+                padding: 15px;
+            }
+
+            .logo h1 {
+                font-size: 25px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .neon-falla {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="logo">
+        <h1><span class="neon-fijo">RA</span><span class="neon-falla">U</span><span class="neon-fijo">L</span></h1>
+        <p>SISTEMA DE ÓRDENES DE VENTA</p>
+    </header>
+
+    <div class="layout">
+        <aside>
+            <section class="panel">
+                <h2>NAVEGACIÓN</h2>
+                <nav class="menu">
+                    <a href="{% url 'lista_ordenes' %}">› Inicio</a>
+                    <a href="{% url 'lista_ordenes' %}">› Órdenes</a>
+                    <a href="{% url 'crear_orden' %}">› Nueva orden</a>
+                    <a href="http://localhost:5000/health" target="_blank" rel="noopener noreferrer">› Estado API</a>
+                </nav>
+            </section>
+
+            <section class="panel">
+                <h2>ARQUITECTURA</h2>
+                <p>› Django</p>
+                <p>› Flask REST API</p>
+                <p>› SQL Server 2022</p>
+                <p class="intro">Docker Compose</p>
+            </section>
+        </aside>
+
+        <main class="contenido">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block contenido %}
+            {% endblock %}
+        </main>
+
+        <aside class="derecha">
+            <section class="panel">
+                <h2>HORA LOCAL</h2>
+                <div class="hora" id="reloj">00:00:00</div>
+                <p>Honduras 🇭🇳</p>
+            </section>
+
+            <section class="panel">
+                <h2>ESTADO DEL SISTEMA</h2>
+                <div class="estado">
+                    <span>Frontend Django</span>
+                    <span class="ok">[ WEB ]</span>
+                </div>
+                <div class="estado">
+                    <span>Flask API</span>
+                    <span>[ API ]</span>
+                </div>
+                <div class="estado">
+                    <span>SQL Server</span>
+                    <span>[ DB ]</span>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>INFORMACIÓN</h2>
+                <p>Arquitectura de Computadoras</p>
+                <p>Segundo Parcial</p>
+                <p class="intro">Sistema CRUD</p>
+            </section>
+        </aside>
+    </div>
+
+    <footer>
+        RAUL © 2026 | Arquitectura de 3 Contenedores
+    </footer>
+
+    <script>
+        function actualizarReloj() {
+            const ahora = new Date();
+
+            document.getElementById("reloj").textContent =
+                new Intl.DateTimeFormat("es-HN", {
+                    timeZone: "America/Tegucigalpa",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false
+                }).format(ahora);
+        }
+
+        actualizarReloj();
+        setInterval(actualizarReloj, 1000);
+    </script>
+</body>
+</html>

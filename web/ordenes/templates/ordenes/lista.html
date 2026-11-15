@@ -1,0 +1,160 @@
+
+{% extends "ordenes/base.html" %}
+
+{% block contenido %}
+
+<section class="panel">
+    <p class="intro">Bienvenido al sistema de administración.</p>
+
+    <h2 class="titulo">PANEL DE ÓRDENES</h2>
+
+    <p>
+        Administra las órdenes de venta, clientes y productos
+        desde una arquitectura distribuida con Docker.
+    </p>
+
+    <div class="actions">
+        <a href="{% url 'crear_orden' %}" class="btn btn-success">
+            + NUEVA ORDEN
+        </a>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>INFORMACIÓN RÁPIDA</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;">
+
+        <div style="border:1px solid #383842;padding:18px;">
+            <p class="intro">TOTAL DE ÓRDENES</p>
+            <h2 style="font-size:40px;color:#ffb1c4;">
+                {{ ordenes|length }}
+            </h2>
+        </div>
+
+        <div style="border:1px solid #383842;padding:18px;">
+            <p class="intro">BASE DE DATOS</p>
+            <h2 style="color:#55ff99;">SQL SERVER</h2>
+        </div>
+
+        <div style="border:1px solid #383842;padding:18px;">
+            <p class="intro">ARQUITECTURA</p>
+            <h2 style="color:#55ff99;">3 CONTENEDORES</h2>
+        </div>
+
+    </div>
+</section>
+
+<section class="panel">
+
+    <h2>REGISTRO DE ÓRDENES</h2>
+
+    <p class="intro">
+        Listado de órdenes almacenadas en SQL Server
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>CLIENTE</th>
+                <th>ESTADO</th>
+                <th>TOTAL</th>
+                <th>ACCIONES</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for orden in ordenes %}
+            <tr>
+                <td>#{{ orden.id }}</td>
+
+                <td>{{ orden.cliente }}</td>
+
+                <td>
+                    {% if orden.estado == "Pagada" %}
+                        <span style="color:#55ff99;">
+                            [ PAGADA ]
+                        </span>
+                    {% elif orden.estado == "Pendiente" %}
+                        <span style="color:#ffc46b;">
+                            [ PENDIENTE ]
+                        </span>
+                    {% else %}
+                        <span style="color:#ff476e;">
+                            [ ANULADA ]
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td style="color:#55ff99;">
+                    L {{ orden.total|floatformat:2 }}
+                </td>
+
+                <td>
+                    <div class="actions">
+
+                        <a href="{% url 'ver_orden' orden.id %}"
+                           class="btn">
+                            VER
+                        </a>
+
+                        <a href="{% url 'editar_orden' orden.id %}"
+                           class="btn btn-warning">
+                            EDITAR
+                        </a>
+
+                        <form method="post"
+                              action="{% url 'eliminar_orden' orden.id %}"
+                              onsubmit="return confirm('¿Seguro que deseas eliminar esta orden y todos sus productos?');">
+
+                            {% csrf_token %}
+
+                            <button type="submit" class="btn btn-danger">
+                                ELIMINAR
+                            </button>
+
+                        </form>
+
+                    </div>
+                </td>
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="5" style="text-align:center;padding:30px;">
+                    No hay órdenes registradas.
+                </td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="panel">
+    <h2>ESTADO DE LA ARQUITECTURA</h2>
+
+    <div class="estado">
+        <span>Frontend</span>
+        <span>Django</span>
+    </div>
+
+    <div class="estado">
+        <span>Servicios REST</span>
+        <span>Flask</span>
+    </div>
+
+    <div class="estado">
+        <span>Almacenamiento</span>
+        <span>SQL Server 2022</span>
+    </div>
+
+    <div class="estado">
+        <span>Orquestación</span>
+        <span>Docker Compose</span>
+    </div>
+</section>
+
+{% endblock %}
