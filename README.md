@@ -1,15 +1,14 @@
 
 # RAUL | Sistema de Órdenes de Venta
 
-### Arquitectura de tres contenedores con Docker Compose
+## Arquitectura de tres contenedores con Docker Compose
 
 **Asignatura:** Arquitectura de Computadoras  
 **Evaluación:** Examen práctico del segundo parcial  
 **Valor:** 15 puntos  
 **Fecha de entrega:** 17 de noviembre de 2026
 
-**Repositorio oficial:**  
-https://github.com/raaraudalesg-cell/ordenes-docker
+**Repositorio:** https://github.com/raaraudalesg-cell/ordenes-docker
 
 ---
 
@@ -19,104 +18,108 @@ https://github.com/raaraudalesg-cell/ordenes-docker
 |---|---|
 | RAUL ANDRES RAUDALES GARCIA | 202510010696 |
 
-## 2. Descripción
+## 2. Descripción del proyecto
 
-Se desarrolló un sistema web para administrar órdenes de venta y sus respectivos productos, utilizando una arquitectura distribuida de tres contenedores Docker.
+RAUL es un sistema web de administración de órdenes de venta desarrollado mediante una arquitectura de tres contenedores Docker.
 
-El sistema permite crear, consultar, actualizar y eliminar órdenes y detalles de productos mediante una interfaz web desarrollada en Django.
+La aplicación permite registrar clientes, crear órdenes, agregar productos, consultar información, modificar registros y eliminar órdenes o detalles.
 
-La comunicación entre los servicios se realiza a través de una API REST implementada en Flask, mientras que la información se almacena en Microsoft SQL Server 2022.
+Los servicios se distribuyen de la siguiente manera:
 
-El proyecto utiliza Docker Compose para administrar los contenedores, las redes, los volúmenes, las variables de entorno, las dependencias y los límites de recursos.
+- **Django:** interfaz web.
+- **Flask:** API REST y lógica de negocio.
+- **SQL Server 2022:** almacenamiento de información.
+
+Docker Compose permite administrar los servicios, redes, volúmenes, variables de entorno, dependencias, límites de recursos y verificaciones de salud.
 
 ## 3. Objetivos
 
 ### Objetivo general
 
-Diseñar e implementar una aplicación distribuida utilizando Docker Compose y tres contenedores independientes para presentación, servicios y almacenamiento.
+Implementar una aplicación distribuida mediante Docker Compose, utilizando tres contenedores independientes para presentación, procesamiento y almacenamiento.
 
 ### Objetivos específicos
 
-- Construir imágenes Docker propias para Flask y Django.
-- Implementar una base de datos SQL Server con relaciones PK y FK.
-- Desarrollar una API REST con operaciones CRUD.
-- Crear una interfaz web para administrar órdenes y productos.
-- Implementar persistencia mediante volúmenes Docker.
-- Configurar redes, healthchecks y límites de CPU y memoria.
-- Documentar y publicar el proyecto en GitHub y Docker Hub.
+- Crear imágenes Docker para Django y Flask.
+- Implementar una base de datos relacional en SQL Server.
+- Desarrollar operaciones CRUD mediante una API REST.
+- Crear una interfaz web para administrar órdenes.
+- Implementar persistencia mediante volúmenes.
+- Configurar healthchecks y límites de recursos.
+- Publicar el código en GitHub.
+- Publicar las imágenes propias en Docker Hub.
+- Comprobar la instalación desde una clonación limpia.
 
 ## 4. Tecnologías utilizadas
 
 | Tecnología | Función |
 |---|---|
 | Docker | Contenedorización |
-| Docker Compose | Orquestación |
+| Docker Compose | Administración de servicios |
 | SQL Server 2022 | Base de datos |
-| Python Flask | API REST |
-| Python Django | Interfaz web |
+| Python | Lenguaje de programación |
+| Flask | API REST |
+| Django | Interfaz web |
 | Gunicorn | Servidor de aplicaciones |
-| pymssql | Conexión Flask-SQL Server |
-| requests | Comunicación Django-Flask |
-| HTML, CSS y JavaScript | Presentación |
-| Git y GitHub | Control de versiones |
+| pymssql | Conexión con SQL Server |
+| requests | Comunicación entre Django y Flask |
+| HTML y CSS | Presentación |
+| Git | Control de versiones |
+| GitHub | Repositorio del proyecto |
+| Docker Hub | Publicación de imágenes |
 
-## 5. Arquitectura
+## 5. Arquitectura del sistema
 
-El proyecto utiliza tres servicios:
-
-- `db`: almacenamiento de información en SQL Server.
-- `api`: procesamiento de solicitudes REST con Flask.
-- `web`: interfaz de usuario con Django.
-
-### Diagrama
+La aplicación utiliza tres servicios conectados mediante una red Docker.
 
 ```text
-                       USUARIO
-                          |
-                          v
-                    NAVEGADOR WEB
-                          |
-                      Puerto 8000
-                          |
-                          v
-               +-----------------------+
-               |      ordenes-web      |
-               |        DJANGO         |
-               |        512 MB         |
-               |         1 CPU         |
-               +-----------------------+
-                          |
-                     http://api:5000
-                          |
-                          v
-               +-----------------------+
-               |      ordenes-api      |
-               |      PYTHON FLASK     |
-               |        512 MB         |
-               |         1 CPU         |
-               +-----------------------+
-                          |
-                        db:1433
-                          |
-                          v
-               +-----------------------+
-               |       ordenes-db      |
-               |    SQL SERVER 2022    |
-               |         2 GB          |
-               |        2 CPU          |
-               +-----------------------+
-                          |
-                          v
-               +-----------------------+
-               |    sqlserver_data     |
-               |   VOLUMEN PERSISTENTE |
-               +-----------------------+
+                  USUARIO
+                     |
+                     v
+               NAVEGADOR WEB
+                     |
+                 Puerto 8000
+                     |
+                     v
+           +-------------------+
+           |    ordenes-web    |
+           |      DJANGO       |
+           |      512 MB       |
+           |       1 CPU       |
+           +-------------------+
+                     |
+                api:5000
+                     |
+                     v
+           +-------------------+
+           |    ordenes-api    |
+           |       FLASK       |
+           |      512 MB       |
+           |       1 CPU       |
+           +-------------------+
+                     |
+                  db:1433
+                     |
+                     v
+           +-------------------+
+           |     ordenes-db    |
+           |    SQL SERVER     |
+           |       2 GB        |
+           |       2 CPU       |
+           +-------------------+
+                     |
+                     v
+           +-------------------+
+           |  sqlserver_data   |
+           | VOLUMEN PERSISTENTE|
+           +-------------------+
 
-                RED: ordenes_network
-                    DRIVER: bridge
+             ordenes_network
 ```
 
-Django consume exclusivamente la API REST. Flask es el único servicio que accede directamente a SQL Server.
+Django se comunica con Flask mediante HTTP.
+
+Flask es el único servicio que accede directamente a SQL Server.
 
 ## 6. Estructura del proyecto
 
@@ -137,11 +140,6 @@ ordenes-docker/
 |   |-- ordenes/
 |   |   |-- templates/
 |   |       |-- ordenes/
-|   |           |-- base.html
-|   |           |-- lista.html
-|   |           |-- detalle.html
-|   |           |-- formulario_orden.html
-|   |           |-- formulario_detalle.html
 |   |-- manage.py
 |   |-- Dockerfile
 |   |-- requirements.txt
@@ -156,51 +154,50 @@ ordenes-docker/
 
 ## 7. Requisitos previos
 
-Para ejecutar el sistema se necesita:
+Para ejecutar el proyecto se necesita:
 
-- Docker Desktop con Docker Compose.
-- Git.
-- Navegador web.
-- Recursos suficientes para ejecutar SQL Server y los servicios Python.
+- Windows con PowerShell.
+- Docker Desktop instalado y funcionando.
+- Docker Compose disponible.
+- Git instalado.
+- Conexión a Internet para descargar imágenes.
 - Puertos 1433, 5000 y 8000 disponibles.
 
 No es necesario instalar SQL Server, Flask o Django directamente en Windows.
 
-## 8. Instalación y ejecución
+**Importante:** los comandos de instalación están preparados para PowerShell. Deben ejecutarse en el orden indicado.
+
+## 8. Instalación completa desde GitHub
+
+Esta sección permite descargar y ejecutar el proyecto sin modificar manualmente ningún archivo de configuración.
+
+Los comandos se pueden copiar y pegar directamente en PowerShell.
 
 ### 8.1. Clonar el repositorio
 
 ```powershell
+cd $HOME\Downloads
 git clone https://github.com/raaraudalesg-cell/ordenes-docker.git
 cd ordenes-docker
 ```
 
-### 8.2. Crear el archivo de configuración
+### 8.2. Generar automáticamente las variables de entorno
+
+Ejecutar:
 
 ```powershell
-Copy-Item .env.example .env
+$clave="Raul!"+[guid]::NewGuid().ToString("N")+"9A"; $django=[guid]::NewGuid().ToString("N")+[guid]::NewGuid().ToString("N"); @("MSSQL_SA_PASSWORD=$clave","DJANGO_SECRET_KEY=$django") | Set-Content -Path .env -Encoding ascii
 ```
 
-Editar `.env` y configurar las variables:
+Este comando genera automáticamente:
 
-```dotenv
-MSSQL_SA_PASSWORD=REEMPLAZAR_CON_CONTRASENA_SEGURA
-DJANGO_SECRET_KEY=REEMPLAZAR_CON_CLAVE_ALEATORIA
-```
+- Una contraseña segura para SQL Server.
+- Una clave secreta para Django.
+- El archivo `.env` con ambas variables.
 
-La contraseña de SQL Server debe cumplir los requisitos de complejidad del motor.
+No es necesario abrir el archivo ni escribir contraseñas manualmente.
 
-La clave de Django debe ser un valor aleatorio suficientemente largo.
-
-Para generar una clave de Django desde PowerShell:
-
-```powershell
-[guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
-```
-
-Copiar el resultado y utilizarlo como valor de `DJANGO_SECRET_KEY`.
-
-El archivo `.env` contiene información privada y no debe subirse al repositorio.
+El archivo `.env` no debe subirse a GitHub.
 
 ### 8.3. Validar Docker Compose
 
@@ -208,7 +205,7 @@ El archivo `.env` contiene información privada y no debe subirse al repositorio
 docker compose config --quiet
 ```
 
-Si no aparecen errores, la configuración es válida.
+Si no aparecen errores ni advertencias, la configuración es válida.
 
 ### 8.4. Iniciar SQL Server
 
@@ -216,49 +213,69 @@ Si no aparecen errores, la configuración es válida.
 docker compose up -d db
 ```
 
-Comprobar su estado:
+### 8.5. Esperar automáticamente a que SQL Server esté saludable
 
 ```powershell
-docker compose ps
+while ((docker inspect ordenes-db --format '{{.State.Health.Status}}') -ne 'healthy') { Start-Sleep -Seconds 5 }
 ```
 
-Esperar hasta que `ordenes-db` aparezca como `healthy`.
+Este comando espera hasta que SQL Server termine de iniciar.
 
-### 8.5. Inicializar la base de datos
+Cuando finalice, continuar con el siguiente paso.
 
-En una instalación nueva, ejecutar el archivo `db/init.sql` para crear `OrdenesDB`, sus tablas y los datos de prueba.
+Si el contenedor no alcanza el estado saludable, consultar los registros con:
 
-Desde PowerShell:
+```powershell
+docker logs ordenes-db --tail 40
+```
+
+### 8.6. Crear la base de datos y cargar los registros iniciales
 
 ```powershell
 Get-Content .\db\init.sql -Raw | docker exec -i ordenes-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ((Get-Content .\.env | Where-Object { $_ -match '^MSSQL_SA_PASSWORD=' } | Select-Object -First 1) -replace '^MSSQL_SA_PASSWORD=', '') -C -b
 ```
 
-La inicialización debe realizarse una sola vez para una base nueva, salvo que el script esté preparado para ejecutarse repetidamente.
+Este comando ejecuta el archivo `db/init.sql` y prepara la base de datos `OrdenesDB`.
 
-En una instalación limpia se cargan:
+En una instalación nueva se cargan:
 
-- 6 órdenes iniciales.
-- 12 detalles de productos.
-- Un monto total de L 130,800.00.
+- 6 órdenes.
+- 12 detalles.
+- L 130,800.00 en registros de venta.
 
-### 8.6. Construir e iniciar todos los servicios
+El comando de inicialización está destinado a una base de datos nueva y no debe ejecutarse repetidamente sobre una base ya inicializada sin revisar previamente el script.
+
+### 8.7. Construir e iniciar Flask y Django
 
 ```powershell
 docker compose up -d --build
 ```
 
-### 8.7. Verificar los contenedores
+Docker Compose construirá las imágenes de Flask y Django y levantará los servicios.
+
+### 8.8. Verificar los tres contenedores
 
 ```powershell
 docker compose ps
 ```
 
-Los tres servicios deben aparecer activos y saludables:
+El resultado esperado es:
 
-- `ordenes-db`
-- `ordenes-api`
-- `ordenes-web`
+```text
+ordenes-db    Up (healthy)
+ordenes-api   Up (healthy)
+ordenes-web   Up (healthy)
+```
+
+### 8.9. Abrir la aplicación
+
+Desde PowerShell:
+
+```powershell
+Start-Process http://localhost:8000
+```
+
+La interfaz RAUL debe abrirse en el navegador.
 
 ## 9. Direcciones de acceso
 
@@ -266,7 +283,7 @@ Los tres servicios deben aparecer activos y saludables:
 |---|---|
 | Django | http://localhost:8000 |
 | Flask API | http://localhost:5000/api/ordenes |
-| Healthcheck API | http://localhost:5000/health |
+| Salud de la API | http://localhost:5000/health |
 | SQL Server | localhost:1433 |
 
 ## 10. Base de datos
@@ -277,47 +294,60 @@ Se utiliza Microsoft SQL Server 2022 con la base de datos `OrdenesDB`.
 
 | Campo | Descripción |
 |---|---|
-| id | Clave primaria autoincremental |
+| id | Clave primaria |
 | cliente | Nombre del cliente |
-| fecha | Fecha de la orden |
-| estado | Pendiente, Pagada o Anulada |
+| fecha | Fecha de registro |
+| estado | Estado de la orden |
 | total | Total de la venta |
 
 ### Tabla orden_detalle
 
 | Campo | Descripción |
 |---|---|
-| id | Clave primaria autoincremental |
+| id | Clave primaria |
 | orden_id | Clave foránea |
 | producto | Nombre del producto |
-| cantidad | Unidades |
-| precio_unitario | Precio en lempiras |
-| subtotal | Importe del producto |
+| cantidad | Cantidad solicitada |
+| precio_unitario | Precio unitario |
+| subtotal | Importe del detalle |
 
-Una orden puede tener múltiples detalles.
+Una orden puede tener varios detalles.
 
-La base de datos incluye registros iniciales para comprobar el funcionamiento del sistema.
+Los estados utilizados son:
 
-## 11. Productos y referencia de precios
+- Pendiente.
+- Pagada.
+- Anulada.
 
-Los productos tecnológicos utilizados como referencia para los datos de ejemplo se basan en el catálogo de PC Builds Honduras.
+## 11. Datos de prueba
 
-**Fuente:** https://pcbuildshonduras.com/
+La base de datos inicial contiene seis órdenes y doce detalles.
 
-Los valores del sistema están expresados en lempiras hondureños (HNL).
+| ID | Cliente | Estado | Total |
+|---|---|---|---|
+| 1 | GUSTAVO ADOLFO SIU MARQUEZ | Pendiente | L 16,600.00 |
+| 2 | JOSE ALFREDO MEJIA GRANADOS | Pagada | L 17,400.00 |
+| 3 | NELSON JAVIER GUERRA NOLASCO | Pendiente | L 27,500.00 |
+| 4 | RAUL ANDRES RAUDALES GARCIA | Pagada | L 22,900.00 |
+| 5 | RUT NOHEMY SANCHEZ GARCIA | Pendiente | L 15,300.00 |
+| 6 | STANLEY LEMUEL GOFF STERBROOCK | Anulada | L 31,100.00 |
 
-Los precios almacenados son datos de prueba académicos. No se garantiza que coincidan con los precios vigentes del proveedor.
+**Total general: L 130,800.00**
 
-Los importes pueden cambiar según disponibilidad, promociones y actualizaciones del catálogo.
+Los productos utilizados como referencia incluyen laptops y teclados.
+
+**Referencia comercial:** https://pcbuildshonduras.com/
+
+Los precios almacenados son datos de prueba académicos y no representan necesariamente precios vigentes.
 
 ## 12. API REST Flask
 
-La API permite administrar órdenes y detalles mediante solicitudes HTTP y respuestas JSON.
+La API administra las órdenes y sus detalles mediante solicitudes HTTP.
 
 | Método | Endpoint | Operación |
 |---|---|---|
 | GET | /api/ordenes | Listar órdenes |
-| GET | /api/ordenes/{id} | Consultar una orden |
+| GET | /api/ordenes/{id} | Consultar orden |
 | POST | /api/ordenes | Crear orden |
 | PUT | /api/ordenes/{id} | Actualizar orden |
 | DELETE | /api/ordenes/{id} | Eliminar orden |
@@ -325,81 +355,75 @@ La API permite administrar órdenes y detalles mediante solicitudes HTTP y respu
 | POST | /api/ordenes/{id}/detalles | Agregar detalle |
 | PUT | /api/detalles/{id} | Actualizar detalle |
 | DELETE | /api/detalles/{id} | Eliminar detalle |
-| GET | /health | Comprobar disponibilidad |
-
-La API contempla respuestas HTTP como 200, 201, 400 y 404.
+| GET | /health | Verificar salud |
 
 ### Cálculo de totales
 
-El subtotal de cada detalle se calcula mediante:
+El subtotal se calcula mediante:
 
 `subtotal = cantidad * precio_unitario`
 
-El total de la orden es:
-
-`total = suma de subtotales`
-
-Cuando se agrega, modifica o elimina un producto, el total se recalcula automáticamente.
+El total de una orden corresponde a la suma de sus subtotales.
 
 ## 13. Frontend Django
 
-La interfaz RAUL permite:
+La interfaz web permite:
 
-- Listar órdenes.
-- Registrar clientes y órdenes.
-- Consultar información de una orden.
-- Editar órdenes.
+- Consultar órdenes.
+- Registrar nuevas órdenes.
+- Modificar información.
 - Eliminar órdenes.
+- Consultar detalles.
 - Agregar productos.
 - Modificar cantidades y precios.
-- Eliminar detalles.
-- Visualizar los totales calculados.
-- Mostrar mensajes de error o confirmación.
+- Eliminar productos.
+- Visualizar totales.
+
+Django consume la API Flask mediante la red interna de Docker.
 
 La aplicación presenta un diseño oscuro de estilo retro con efectos de neón.
 
-Django utiliza la variable `API_URL` para comunicarse con Flask mediante el nombre del servicio Docker.
+## 14. Docker Compose y límites de recursos
 
-## 14. Docker Compose y recursos
-
-| Servicio | Puerto | RAM máxima | CPU máxima |
+| Servicio | Puerto | Memoria | CPU |
 |---|---|---|---|
 | SQL Server | 1433 | 2 GB | 2 |
 | Flask | 5000 | 512 MB | 1 |
 | Django | 8000 | 512 MB | 1 |
 
-### Healthchecks
+### Red
 
-- SQL Server verifica la respuesta del motor de base de datos.
-- Flask comprueba `/health`.
-- Django comprueba que el frontend responda por HTTP.
-
-### Dependencias
-
-- Flask espera a que SQL Server esté saludable.
-- Django espera a que Flask esté saludable.
+Los tres servicios utilizan la red `ordenes_network`.
 
 ### Persistencia
 
 SQL Server utiliza el volumen `sqlserver_data`, montado en `/var/opt/mssql`.
 
-Los datos se conservan al detener y eliminar los contenedores sin eliminar el volumen.
+### Healthchecks
+
+Cada servicio dispone de una comprobación de salud para verificar su disponibilidad.
+
+### Dependencias
+
+Flask depende de SQL Server.
+
+Django depende de Flask.
 
 ## 15. Pruebas de funcionamiento
 
-### Estado de los contenedores
+### 15.1. Verificar contenedores
 
 ```powershell
 docker compose ps
 ```
 
-### Estado de la API
+### 15.2. Verificar la API
 
 ```powershell
 Invoke-RestMethod http://localhost:5000/health
 ```
 
-El resultado esperado es:
+Resultado esperado:
 
 ```text
 database   status
@@ -407,27 +431,31 @@ database   status
 connected  healthy
 ```
 
-### Consulta de órdenes
+### 15.3. Consultar órdenes
 
 ```powershell
 Invoke-RestMethod http://localhost:5000/api/ordenes
 ```
 
-### Respuesta HTTP de Django
+### 15.4. Comprobar Django
 
 ```powershell
 (Invoke-WebRequest http://localhost:8000 -UseBasicParsing).StatusCode
 ```
 
-La respuesta esperada es `200`.
+Resultado esperado:
 
-### Consumo de recursos
+```text
+200
+```
+
+### 15.5. Consultar recursos
 
 ```powershell
 docker stats --no-stream
 ```
 
-### Comprobar límites de CPU
+### 15.6. Comprobar límites de CPU
 
 ```powershell
 docker inspect ordenes-db --format '{{.HostConfig.NanoCpus}}'
@@ -435,9 +463,9 @@ docker inspect ordenes-api --format '{{.HostConfig.NanoCpus}}'
 docker inspect ordenes-web --format '{{.HostConfig.NanoCpus}}'
 ```
 
-### Prueba de persistencia
+### 15.7. Comprobar persistencia
 
-Registrar una orden de prueba y comprobar que aparece en la interfaz.
+Crear una orden desde la interfaz.
 
 Después ejecutar:
 
@@ -446,97 +474,72 @@ docker compose down
 docker compose up -d
 ```
 
-Esperar a que los tres contenedores estén saludables.
-
-Abrir http://localhost:8000 y comprobar que la orden continúa registrada.
-
-No ejecutar `docker compose down -v`, porque esa opción elimina los volúmenes del proyecto.
-
-### Pruebas CRUD
-
-Se deben comprobar las operaciones de creación, consulta, edición y eliminación de órdenes y detalles desde el navegador.
-
-También se deben comprobar las respuestas JSON de la API mediante PowerShell, curl, Postman o Thunder Client.
-
-### Prueba de instalación limpia realizada
-
-Se comprobó el funcionamiento del proyecto utilizando un nombre independiente de Docker Compose:
+Comprobar nuevamente las órdenes:
 
 ```powershell
-docker compose -p ordenes-prueba up -d db
+Invoke-RestMethod http://localhost:5000/api/ordenes
 ```
 
-Se inicializó una base de datos nueva con 6 órdenes y 12 detalles.
+La orden creada debe permanecer registrada.
 
-Posteriormente se construyeron y ejecutaron los tres servicios:
+**No utilizar `docker compose down -v` si se desea conservar la información.**
 
-```powershell
-docker compose -p ordenes-prueba up -d --build
-```
+### 15.8. Prueba de instalación desde GitHub
 
-Los tres contenedores alcanzaron el estado `healthy`.
+Se realizó una prueba utilizando una clonación independiente del repositorio.
 
-La API respondió correctamente y Django devolvió HTTP `200`.
+La instalación permitió:
 
-### Prueba de persistencia realizada
+- Descargar el proyecto desde GitHub.
+- Generar automáticamente el archivo `.env`.
+- Validar Docker Compose.
+- Iniciar SQL Server.
+- Crear `OrdenesDB`.
+- Insertar seis órdenes.
+- Insertar doce detalles.
+- Comprobar un total de L 130,800.00.
 
-Se detuvieron y eliminaron los contenedores de prueba sin eliminar el volumen:
-
-```powershell
-docker compose -p ordenes-prueba down
-```
-
-Se iniciaron nuevamente:
-
-```powershell
-docker compose -p ordenes-prueba up -d
-```
-
-Después del reinicio, la API recuperó las mismas 6 órdenes iniciales, confirmando que la información permaneció almacenada en el volumen Docker.
-
-El volumen original `ordenes-docker_sqlserver_data` se mantuvo independiente del volumen de prueba `ordenes-prueba_sqlserver_data`.
+La prueba confirmó que la base de datos puede inicializarse desde una copia nueva del repositorio.
 
 ## 16. Evidencias
 
-Las capturas del funcionamiento se almacenan en la carpeta `evidencias/`.
+Las capturas del proyecto pueden almacenarse en `evidencias/`.
 
-| Archivo | Evidencia |
+| Archivo sugerido | Evidencia |
 |---|---|
-| 01-contenedores-healthy.png | Tres servicios saludables |
-| 02-docker-stats.png | Límites y consumo de recursos |
-| 03-api-health.png | Endpoint de salud |
-| 04-api-crud.png | Pruebas REST |
+| 01-contenedores-healthy.png | Contenedores saludables |
+| 02-docker-stats.png | Consumo de recursos |
+| 03-api-health.png | Salud de la API |
+| 04-api-crud.png | Operaciones REST |
 | 05-listado-ordenes.png | Listado de órdenes |
-| 06-crear-orden.png | Creación de orden |
-| 07-detalles-orden.png | Detalles de una orden |
-| 08-agregar-producto.png | Registro de producto |
-| 09-editar-producto.png | Actualización de producto |
-| 10-eliminar-orden.png | Eliminación |
-| 11-persistencia-antes.png | Datos antes de detener Compose |
-| 12-persistencia-despues.png | Datos después de iniciar Compose |
+| 06-crear-orden.png | Registro de orden |
+| 07-detalles-orden.png | Detalles |
+| 08-agregar-producto.png | Agregar producto |
+| 09-editar-producto.png | Editar producto |
+| 10-eliminar-orden.png | Eliminar orden |
+| 11-persistencia-antes.png | Datos antes del reinicio |
+| 12-persistencia-despues.png | Datos después del reinicio |
 
-Las capturas deben corresponder a ejecuciones reales del proyecto.
+Las capturas deben obtenerse de ejecuciones reales.
 
 ## 17. Docker Hub
 
-Las imágenes propias de Flask y Django fueron construidas utilizando sus respectivos Dockerfile y publicadas en Docker Hub.
+Las imágenes propias de Flask y Django fueron publicadas en Docker Hub.
 
 ### Imágenes publicadas
 
-| Servicio | Imagen | Etiqueta |
+| Servicio | Imagen | Versión |
 |---|---|---|
-| Flask API | `ashurrov/ordenes-api` | `v1.0` |
-| Django Web | `ashurrov/ordenes-web` | `v1.0` |
-| SQL Server | `mcr.microsoft.com/mssql/server` | `2022-latest` |
+| Flask API | ashurrov/ordenes-api | v1.0 |
+| Django Web | ashurrov/ordenes-web | v1.0 |
+| SQL Server | mcr.microsoft.com/mssql/server | 2022-latest |
 
-### Enlaces oficiales
+### Enlaces
 
-**Flask API:**
-
+**Flask API:**  
 https://hub.docker.com/r/ashurrov/ordenes-api
 
-**Django Web:**
-
+**Django Web:**  
 https://hub.docker.com/r/ashurrov/ordenes-web
 
 ### Descargar las imágenes
@@ -546,52 +549,33 @@ docker pull ashurrov/ordenes-api:v1.0
 docker pull ashurrov/ordenes-web:v1.0
 ```
 
-### Construcción local
-
-```powershell
-docker compose build
-```
-
-### Etiquetar las imágenes
-
-```powershell
-docker tag ordenes-api:v1.0 ashurrov/ordenes-api:v1.0
-docker tag ordenes-web:v1.0 ashurrov/ordenes-web:v1.0
-```
-
-### Publicar en Docker Hub
+### Publicación de imágenes
 
 ```powershell
 docker login -u ashurrov
+docker tag ordenes-api:v1.0 ashurrov/ordenes-api:v1.0
+docker tag ordenes-web:v1.0 ashurrov/ordenes-web:v1.0
 docker push ashurrov/ordenes-api:v1.0
 docker push ashurrov/ordenes-web:v1.0
 ```
 
-### Resultado de la publicación
+Las dos imágenes se publicaron correctamente con la etiqueta `v1.0`.
 
-La imagen de Flask API fue publicada correctamente con la etiqueta `v1.0`.
+SQL Server utiliza la imagen oficial de Microsoft.
 
-La imagen de Django Web fue publicada correctamente con la etiqueta `v1.0`.
-
-Ambas imágenes están disponibles en los repositorios de Docker Hub indicados anteriormente.
-
-SQL Server utiliza la imagen oficial de Microsoft y no requiere una publicación adicional.
-
-La instalación documentada en la sección 8 utiliza Docker Compose para construir las imágenes desde el código fuente del repositorio.
+La instalación principal del proyecto construye las imágenes de Flask y Django desde sus Dockerfile.
 
 ## 18. GitHub
 
-**Repositorio público:**
+**Repositorio oficial:**
 
 https://github.com/raaraudalesg-cell/ordenes-docker
 
-El repositorio contiene el código fuente, la configuración Docker, el script SQL y la documentación.
+El repositorio contiene el código fuente, Docker Compose, el script SQL y la documentación.
 
-Las credenciales privadas deben permanecer fuera del repositorio.
+El archivo `.env.example` incluye valores de referencia.
 
-El archivo `.env.example` incluye valores de ejemplo que deben reemplazarse antes de iniciar la aplicación.
-
-El archivo `.env` no debe publicarse en GitHub.
+El archivo `.env` se genera automáticamente durante la instalación y no debe publicarse.
 
 ## 19. Comandos de administración
 
@@ -619,13 +603,19 @@ docker compose ps
 docker compose logs --tail 50
 ```
 
+### Consultar recursos
+
+```powershell
+docker stats --no-stream
+```
+
 ### Reiniciar
 
 ```powershell
 docker compose restart
 ```
 
-### Detener sin eliminar datos
+### Detener sin borrar datos
 
 ```powershell
 docker compose down
@@ -633,27 +623,27 @@ docker compose down
 
 ## 20. Conclusiones
 
-El proyecto RAUL demuestra la implementación de una arquitectura distribuida mediante tres contenedores Docker independientes.
+El sistema RAUL demuestra la implementación de una arquitectura distribuida mediante tres contenedores Docker.
 
-La separación entre Django, Flask y SQL Server facilita la organización del sistema y permite que cada servicio tenga una responsabilidad específica.
+La separación entre Django, Flask y SQL Server permite organizar las responsabilidades de presentación, procesamiento y almacenamiento.
 
-Docker Compose permite administrar las dependencias, redes, recursos y ejecución de la aplicación desde un único archivo.
+Docker Compose facilita la configuración de redes, volúmenes, dependencias y límites de recursos.
 
-La persistencia de SQL Server permite conservar la información, mientras que los healthchecks facilitan la comprobación de disponibilidad.
+La persistencia de SQL Server permite conservar los registros después de detener y recrear los contenedores.
 
-El sistema implementa las operaciones CRUD necesarias para administrar órdenes de venta y sus detalles.
+La API REST implementa las operaciones necesarias para administrar órdenes y productos.
 
-Durante las pruebas se verificó que la aplicación puede instalarse desde cero, inicializar la base de datos, iniciar sus tres contenedores y responder correctamente a las solicitudes HTTP.
+Se verificó que la base de datos puede inicializarse correctamente desde una clonación nueva del repositorio.
 
-También se comprobó que los registros de SQL Server permanecen disponibles después de detener y recrear los contenedores sin eliminar el volumen.
+Las imágenes de Flask y Django fueron publicadas en Docker Hub con la etiqueta `v1.0`.
 
-Las imágenes propias de Flask y Django fueron publicadas en Docker Hub con la versión `v1.0`.
+La instalación documentada permite generar automáticamente las credenciales necesarias desde PowerShell sin editar manualmente archivos de configuración.
 
 ## 21. Referencias
 
 - Docker: https://docs.docker.com/
 - Docker Compose: https://docs.docker.com/compose/
-- Microsoft SQL Server: https://learn.microsoft.com/sql/
+- SQL Server: https://learn.microsoft.com/sql/
 - Flask: https://flask.palletsprojects.com/
 - Django: https://docs.djangoproject.com/
 - PC Builds Honduras: https://pcbuildshonduras.com/
